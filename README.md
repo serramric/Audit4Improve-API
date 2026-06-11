@@ -13,3 +13,4 @@ Librería con capacidades que den soporte al desarrollo de aplicaciones para la 
 
 ## [Página en gitHub Pages](https://mit-fs.github.io/Audit4Improve-API/)
 
+Esta rama está para probar la versión 0.2
