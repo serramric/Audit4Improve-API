@@ -1,0 +1,56 @@
+name: serramric
+
+on:
+  workflow_dispatch:
+
+  issues:
+    types: [opened]
+
+  project_card:
+    types: [moved]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  gestion-issues-proyecto:
+    name: Gestión de Issues y Proyecto
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Mostrar información del evento
+        run: |
+          echo "Workflow identificado con UVUS: serramric"
+          echo "Evento disparador: ${{ github.event_name }}"
+          echo "Acción del evento: ${{ github.event.action }}"
+          echo "Repositorio: ${{ github.repository }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Rama/ref: ${{ github.ref }}"
+
+      - name: Comentar issue creado
+        if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = context.payload.issue.number;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: "Workflow serramric ejecutado automáticamente al crear este Issue."
+            });
+
+      - name: Mostrar cambio de columna en proyecto
+        if: ${{ github.event_name == 'project_card' && github.event.action == 'moved' }}
+        run: |
+          echo "Se ha movido una tarjeta de proyecto."
+          echo "ID de la tarjeta: ${{ github.event.project_card.id }}"
+          echo "Columna anterior: ${{ github.event.changes.column_id.from }}"
+          echo "Columna nueva: ${{ github.event.project_card.column_id }}"
+
+      - name: Ejecución manual
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          echo "El workflow serramric ha sido ejecutado manualmente desde GitHub Actions."
